@@ -5,6 +5,7 @@ export const ADD_WORK = 'ADD_WORK';
 export const UPDATE_WORKS = 'UPDATE_WORKS';
 export const REMOVE_WORK = 'REMOVE_WORK';
 export const UPDATE_WORK = 'UPDATE_WORK';
+export const MOVE_WORK = 'MOVE_WORK';
 export const TOGGLE_COPY_AUTHOR_CREDITS = 'TOGGLE_COPY_AUTHOR_CREDITS';
 export const DUPLICATE_WORK = 'DUPLICATE_WORK';
 // Series Actions
@@ -64,6 +65,20 @@ export function toggleCheck(id:string):Action {
 	return {
 		payload: id,
 		type: TOGGLE_COPY_AUTHOR_CREDITS
+	};
+}
+
+/**
+ * Produces an action indicating that a Work should be moved up or down in order.
+ *
+ * @param {string} id - id of the work to be moved
+ * @param {'up' | 'down'} direction - direction to move
+ * @returns {Action} The resulting MOVE_WORK action.
+ */
+export function moveWork(id:string, direction:'up' | 'down'):Action {
+	return {
+		payload: {direction, id},
+		type: MOVE_WORK
 	};
 }
 

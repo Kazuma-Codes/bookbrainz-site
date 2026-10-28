@@ -28,7 +28,7 @@ import {
 import {format, isValid, parseISO} from 'date-fns';
 import {dateObjectToISOString} from './utils';
 
-
+import {sortRelationshipOrdinal} from '../../common/helpers/utils';
 export function extractAttribute(attr, path) {
 	if (attr) {
 		if (path) {
@@ -334,12 +334,20 @@ export function getRelationshipTargetByTypeId(entity, relationshipTypeId: number
 	if (Array.isArray(entity.relationships)) {
 		targets = entity.relationships
 			.filter(
-				(relation) => relation.typeId === relationshipTypeId
+				(relation) => (relation.typeId === relationshipTypeId || relation.relationshipType?.id === relationshipTypeId)
 			)
 			.map((relation) => {
 				const {target} = relation;
-				return target;
+				return {
+					...target,
+					displayNumber: Boolean(relation.position || relation.number),
+					number: relation.number || relation.position,
+					page: relation.page,
+					position: relation.position
+				};
 			});
+		// Sort works in the edition by position
+		targets.sort(sortRelationshipOrdinal('position'));
 	}
 	return targets;
 }
@@ -376,7 +384,7 @@ export function getRelationshipTargetBBIDByTypeId(entity, relationshipTypeId: nu
 	if (Array.isArray(entity.relationships)) {
 		targets = entity.relationships
 			.filter(
-				(relation) => relation.typeId === relationshipTypeId
+				(relation) => (relation.typeId === relationshipTypeId || relation.relationshipType?.id === relationshipTypeId)
 			)
 			.map((relation) => {
 				const {target} = relation;

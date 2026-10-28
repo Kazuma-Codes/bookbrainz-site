@@ -37,7 +37,7 @@ function renderAuthors(authorData) {
 	return authorData.map(author => <div key={author.authorbbid}><a href={`/author/${author.authorbbid}`}>{author.authoralias}</a></div>);
 }
 
-function WorkTableRow({showAddedAtColumn, work, showCheckboxes, selectedEntities, onToggleRow}) {
+function WorkTableRow({showAddedAtColumn, showPageColumn, work, showCheckboxes, selectedEntities, onToggleRow}) {
 	const name = getEntityLabel(work);
 	const authorData = work.authorsData;
 	const number = work.number || '?';
@@ -67,6 +67,7 @@ function WorkTableRow({showAddedAtColumn, work, showCheckboxes, selectedEntities
 			{authorData && <td>{authorData.length ? renderAuthors(authorData) : '?'}</td>}
 			<td>{languages}</td>
 			<td>{workType}</td>
+			{showPageColumn ? <td>{work.page || ''}</td> : null}
 			{showAddedAtColumn ? <td>{addedAt}</td> : null}
 		</tr>
 	);
@@ -77,18 +78,21 @@ WorkTableRow.propTypes = {
 	selectedEntities: PropTypes.array,
 	showAddedAtColumn: PropTypes.bool.isRequired,
 	showCheckboxes: PropTypes.bool,
+	showPageColumn: PropTypes.bool,
 	work: PropTypes.object.isRequired
 };
 WorkTableRow.defaultProps = {
 	onToggleRow: null,
 	selectedEntities: [],
-	showCheckboxes: false
+	showCheckboxes: false,
+	showPageColumn: false
 };
 
 function WorkTable({entity, showAddedAtColumn, works, showAdd, showCheckboxes, selectedEntities, onToggleRow}) {
 	let tableContent;
 	if (works.length) {
 		const showAuthors = works[0].authorsData;
+		const showPageColumn = works.some((work) => Boolean(work.page));
 		tableContent = (
 			<React.Fragment>
 				<Table striped>
@@ -99,6 +103,7 @@ function WorkTable({entity, showAddedAtColumn, works, showAdd, showCheckboxes, s
 							{showAuthors && <th>Author</th>}
 							<th>Languages</th>
 							<th>Type</th>
+							{showPageColumn ? <th>Page</th> : null}
 							{
 								showAddedAtColumn ? <th>Added at</th> : null
 							}
@@ -112,6 +117,7 @@ function WorkTable({entity, showAddedAtColumn, works, showAdd, showCheckboxes, s
 									selectedEntities={selectedEntities}
 									showAddedAtColumn={showAddedAtColumn}
 									showCheckboxes={showCheckboxes}
+									showPageColumn={showPageColumn}
 									work={work}
 									onToggleRow={onToggleRow}
 								/>

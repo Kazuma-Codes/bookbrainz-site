@@ -115,7 +115,7 @@ function postSubmission(url: string, data: Map<string, any>): Promise<void> {
 			}
 		});
 }
-function transformFormData(data:Record<string, any>):Record<string, any> {
+export function transformFormData(data:Record<string, any>):Record<string, any> {
 	const newData = {};
 	const nextId = 0;
 	// add new series
@@ -185,10 +185,29 @@ function transformFormData(data:Record<string, any>):Record<string, any> {
 	if (data.ISBN.type) {
 		data.identifierEditor.m0 = data.ISBN;
 	}
+	let workPosition = 1;
 	data.relationshipSection.relationships = _.mapValues(data.Works, (work, key) => {
+		const attributes: any[] = [
+			{
+				attributeType: 1,
+				value: {textValue: String(workPosition++)}
+			}
+		];
+		if (work.page) {
+			attributes.push({
+				attributeType: 3,
+				value: {textValue: String(work.page).trim()}
+			});
+		}
+		if (work.number) {
+			attributes.push({
+				attributeType: 2,
+				value: {textValue: String(work.number).trim()}
+			});
+		}
 		const relationship = {
 			attributeSetId: null,
-			attributes: [],
+			attributes,
 			isAdded: true,
 			relationshipType: {
 				id: 10

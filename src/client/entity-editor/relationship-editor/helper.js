@@ -52,6 +52,9 @@ export const setAttribute = (state, attributeTypes) => {
 	if (attributes.includes('position')) {
 		result.push(state.attributePosition);
 	}
+	if (attributes.includes('page')) {
+		result.push(state.attributePage);
+	}
 	return result;
 };
 
@@ -68,6 +71,8 @@ export const getAttributeName = (id) => {
 			return 'position';
 		case 2:
 			return 'number';
+		case 3:
+			return 'page';
 		default:
 			return 'unnamed';
 	}

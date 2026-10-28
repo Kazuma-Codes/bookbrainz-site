@@ -36,13 +36,13 @@ import type {
 	Attribute as _Attribute,
 	Relationship as _Relationship
 } from './types';
+import {NumberAttribute, PageAttribute} from './attributes';
 import {faExternalLinkAlt, faPlus, faTimes} from '@fortawesome/free-solid-svg-icons';
 import {getEntityLink, sanitize} from '../../../common/helpers/utils';
 import {getInitAttribute, setAttribute} from './helper';
 
 import EntitySearchFieldOption from '../common/entity-search-field-option';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {NumberAttribute} from './attributes';
 import ReactSelect from 'react-select';
 import {RecentlyUsed} from '../../unified-form/common/recently-used';
 import RelationshipSelect from './relationship-select';
@@ -171,7 +171,8 @@ type RelationshipModalState = {
 	relationship?: _Relationship | null | undefined,
 	targetEntity?: EntitySearchResult | null | undefined,
 	attributePosition?: _Attribute,
-	attributeNumber?: _Attribute
+	attributeNumber?: _Attribute,
+	attributePage?: _Attribute,
 	attributes?: _Attribute[]
 };
 
@@ -181,6 +182,7 @@ function getInitState(
 	if (_.isNull(initRelationship)) {
 		return {
 			attributeNumber: {attributeType: 2, value: {textValue: null}},
+			attributePage: {attributeType: 3, value: {textValue: null}},
 			attributePosition: {attributeType: 1, value: {textValue: null}},
 			attributeSetId: null,
 			attributes: [],
@@ -214,6 +216,7 @@ function getInitState(
 	const attributes = _.get(initRelationship, ['attributes']);
 	const attributePosition = getInitAttribute(attributes, 1);
 	const attributeNumber = getInitAttribute(attributes, 2);
+	const attributePage = getInitAttribute(attributes, 3);
 
 	const searchFormatOtherEntity = otherEntity && {
 		id: _.get(otherEntity, ['bbid']),
@@ -226,6 +229,7 @@ function getInitState(
 
 	return {
 		attributeNumber,
+		attributePage,
 		attributePosition,
 		attributeSetId: _.get(initRelationship, ['attributeSetId']),
 		attributes,
@@ -300,6 +304,17 @@ class RelationshipModal
 		};
 		this.setState({
 			attributeNumber
+		});
+	};
+
+	handlePageAttributeChange = ({target}) => {
+		const value = target.value === '' ? null : target.value;
+		const attributePage = {
+			attributeType: 3,
+			value: {textValue: value}
+		};
+		this.setState({
+			attributePage
 		});
 	};
 
@@ -445,6 +460,14 @@ class RelationshipModal
 						<NumberAttribute
 							value={this.state.attributeNumber?.value?.textValue}
 							onHandleChange={this.handleNumberAttributeChange}
+						/> :
+						null
+				}
+				{
+					attributes.includes('page') ?
+						<PageAttribute
+							value={this.state.attributePage?.value?.textValue}
+							onHandleChange={this.handlePageAttributeChange}
 						/> :
 						null
 				}

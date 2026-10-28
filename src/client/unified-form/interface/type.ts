@@ -207,6 +207,7 @@ export type WorkRowStateProps = {
 };
 export type WorkRowDispatchProps = {
     onChange: (value:any) => void;
+    onMove?: (direction:'up' | 'down') => void;
     onRemove: () => void;
 	onToggle: () => void;
 };

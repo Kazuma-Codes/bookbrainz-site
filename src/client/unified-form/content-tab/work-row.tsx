@@ -1,6 +1,6 @@
 import * as Bootstrap from 'react-bootstrap/';
 import {WorkRowDispatchProps, WorkRowProps, WorkRowStateProps} from '../interface/type';
-import {removeWork, toggleCheck, updateWork} from './action';
+import {moveWork, removeWork, toggleCheck, updateWork} from './action';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import React from 'react';
 import SearchEntityCreate from '../common/search-entity-create-select';
@@ -11,7 +11,7 @@ import {faInfoCircle} from '@fortawesome/free-solid-svg-icons';
 
 const {Row, Col, Button, FormCheck, ButtonGroup, Tooltip, OverlayTrigger, FormLabel} = Bootstrap;
 
-function WorkRow({onChange, work, onRemove, onToggle, onCopyHandler, rowId, ...rest}:WorkRowProps) {
+function WorkRow({onChange, onMove, work, onRemove, onToggle, onCopyHandler, rowId, ...rest}:WorkRowProps) {
 	const isChecked = work?.checked;
 	const handleCopy = React.useCallback(() => onCopyHandler(rowId), [onCopyHandler, work]);
 	const onChangeHandler = React.useCallback((value:any, action:any) => {
@@ -25,6 +25,15 @@ function WorkRow({onChange, work, onRemove, onToggle, onCopyHandler, rowId, ...r
 		value.checked = isChecked;
 		onChange(value);
 	}, [isChecked, onChange, onRemove]);
+	const onPageChange = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+		onChange({...work, page: event.target.value});
+	}, [onChange, work]);
+	const handleMoveUp = React.useCallback(() => {
+		onMove?.('up');
+	}, [onMove]);
+	const handleMoveDown = React.useCallback(() => {
+		onMove?.('down');
+	}, [onMove]);
 	const checkToolTip = (
 		<Tooltip id="work-check">This will set the book&apos;s Author Credits from the &lsquo;Cover&lsquo; tab as this Work&apos;s
 	 Author
@@ -58,7 +67,18 @@ function WorkRow({onChange, work, onRemove, onToggle, onCopyHandler, rowId, ...r
 					/>
 				</Col>
 				<Col lg={{span: 2}}>
+					<input
+						className="form-control"
+						placeholder="Page (e.g. 15, ix)"
+						type="text"
+						value={work?.page || ''}
+						onChange={onPageChange}
+					/>
+				</Col>
+				<Col lg={{span: 4}}>
 					<ButtonGroup>
+						<Button aria-label="Move up" size="sm" variant="outline-secondary" onClick={handleMoveUp}>↑</Button>
+						<Button aria-label="Move down" size="sm" variant="outline-secondary" onClick={handleMoveDown}>↓</Button>
 						<Button variant="primary" onClick={handleCopy as React.MouseEventHandler}>Duplicate</Button>
 						<Button variant="danger" onClick={onRemove}>Remove</Button>
 					</ButtonGroup>
@@ -92,6 +112,7 @@ function mapDispatchToProps(dispatch, {rowId}) {
 			}
 			dispatch(updateWork(rowId, value));
 		},
+		onMove: (direction:'up' | 'down') => dispatch(moveWork(rowId, direction)),
 		onRemove: () => dispatch(removeWork(rowId)),
 		onToggle: () => dispatch(toggleCheck(rowId))
 	};

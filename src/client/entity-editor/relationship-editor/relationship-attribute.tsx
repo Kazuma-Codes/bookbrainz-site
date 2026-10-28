@@ -38,6 +38,7 @@ function getAttributeForDisplay(attribute, key) {
 	}
 	switch (attributeName) {
 		case 'number':
+		case 'page':
 			return <span key={key}>({attributeName}: {attributeValue})</span>;
 		default:
 			return null;

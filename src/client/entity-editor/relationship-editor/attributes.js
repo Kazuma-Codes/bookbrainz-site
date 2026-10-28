@@ -47,3 +47,30 @@ NumberAttribute.propTypes = {
 NumberAttribute.defaultProps = {
 	value: ''
 };
+
+
+export function PageAttribute({
+	onHandleChange, value
+}) {
+	return (
+		<>
+			<Form.Label>Page</Form.Label>
+			<input
+				className="form-control"
+				placeholder="Enter starting page (e.g. 42, ix)"
+				type="text"
+				value={value || ''}
+				onChange={onHandleChange}
+			/>
+		</>
+	);
+}
+
+PageAttribute.propTypes = {
+	onHandleChange: PropTypes.func.isRequired,
+	value: PropTypes.string
+};
+
+PageAttribute.defaultProps = {
+	value: ''
+};
